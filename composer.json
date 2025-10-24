@@ -1,0 +1,29 @@
+{
+  "name": "on1kel/oas-profile-31",
+  "description": "OpenAPI 3.1 profile for on1kel/oas-core (features, allowed/required keys, extra rules).",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": "^8.2",
+    "on1kel/oas-core": "^1.0"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.1",
+    "friendsofphp/php-cs-fixer": "^3.89"
+  },
+  "autoload": {
+    "psr-4": {
+      "On1kel\\OAS\\Profile31\\": "src/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "analyse": "vendor/bin/phpstan analyse --configuration phpstan.neon --no-progress",
+    "format": "vendor/bin/php-cs-fixer fix --config cs_dist.php --allow-risky=yes --show-progress=none"
+  },
+  "bin": [
+    "bin/oas-validate"
+  ],
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
