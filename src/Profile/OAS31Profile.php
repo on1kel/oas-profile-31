@@ -15,6 +15,11 @@ final class OAS31Profile implements SpecProfile
         return '3.1';
     }
 
+    public function patch(): int
+    {
+        return 0;
+    }
+
     public function features(): FeatureSet
     {
         return new FeatureSet(
@@ -31,22 +36,32 @@ final class OAS31Profile implements SpecProfile
     }
 
     /** @return array<int,string> */
+    /** @return array<int,string> */
     public function allowedKeysFor(string $nodeType): array
     {
         return match ($nodeType) {
+            // ── OpenAPI корень
             'OpenApiDocument' => [
                 'openapi','info','jsonSchemaDialect','servers','paths','webhooks','components','security','tags','externalDocs','x-',
             ],
-            'Info' => ['title','summary','description','termsOfService','contact','license','version','x-'],
+
+            // ── Info / Contact / License
+            'Info'    => ['title','summary','description','termsOfService','contact','license','version','x-'],
             'Contact' => ['name','url','email','x-'],
             'License' => ['name','identifier','url','x-'],
-            'Server' => ['url','description','variables','x-'],
+
+            // ── Servers
+            'Server'         => ['url','description','variables','x-'],
             'ServerVariable' => ['enum','default','description','x-'],
+
+            // ── Components
             'Components' => [
                 'schemas','responses','parameters','examples','requestBodies','headers','securitySchemes','links','callbacks','pathItems','x-',
             ],
+
+            // ── Schema (JSON Schema 2020-12 + OAS надстройки)
             'Schema' => [
-                // JSON Schema 2020-12 core + applicator + validation + metadata + unevaluated + OAS-надстройки
+                // JSON Schema core/applicator/validation/metadata/unevaluated
                 '$id','$schema','$anchor','$ref','$defs','$comment','$dynamicRef','$dynamicAnchor',
                 'type','properties','patternProperties','additionalProperties','items',
                 'allOf','anyOf','oneOf','not','const','enum','required',
@@ -63,25 +78,49 @@ final class OAS31Profile implements SpecProfile
                 // нет 'nullable' в 3.1
                 'x-',
             ],
-            'Xml' => ['name','namespace','prefix','attribute','wrapped','x-'],
-            'ExternalDocumentation' => ['description','url','x-'],
+
+            // ── Xml / ExternalDocs
+            'Xml'                  => ['name','namespace','prefix','attribute','wrapped','x-'],
+            'ExternalDocumentation'=> ['description','url','x-'],
+
+            // ── PathItem & Operation
             'PathItem' => [
                 '$ref','summary','description','get','put','post','delete','options','head','patch','trace','servers','parameters','x-'
             ],
-            'Operation' => ['tags','summary','description','externalDocs','operationId','parameters','requestBody','responses','callbacks','deprecated','security','servers','x-'],
-            'Parameter' => ['name','in','description','required','deprecated','allowEmptyValue','style','explode','allowReserved','schema','example','examples','content','x-'],
+            'Operation' => [
+                'tags','summary','description','externalDocs','operationId','parameters','requestBody','responses','callbacks','deprecated','security','servers','x-'
+            ],
+
+            // ── Parameter / RequestBody / MediaType / Encoding / Header / Response
+            'Parameter'   => ['name','in','description','required','deprecated','allowEmptyValue','style','explode','allowReserved','schema','example','examples','content','x-'],
             'RequestBody' => ['description','content','required','x-'],
-            'MediaType' => ['schema','example','examples','encoding','x-'],
-            'Encoding' => ['contentType','headers','style','explode','allowReserved','x-'],
-            'Header' => ['description','required','deprecated','allowEmptyValue','style','explode','allowReserved','schema','example','examples','content','x-'],
-            'Response' => ['description','headers','content','links','x-'],
+            'MediaType'   => ['schema','example','examples','encoding','x-'],
+            'Encoding'    => ['contentType','headers','style','explode','allowReserved','x-'],
+
+            // ВАЖНО: Header = структура Parameter БЕЗ name/in; на практике не допускаем required/allowEmptyValue
+            'Header'      => ['description','deprecated','style','explode','allowReserved','schema','example','examples','content','x-'],
+
+            'Response'    => ['description','headers','content','links','x-'],
+
+            // ── Example / Link / Callback
             'Example' => ['summary','description','value','externalValue','x-'],
-            'Link' => ['operationRef','operationId','parameters','requestBody','description','server','x-'],
-            'Callback' => ['x-'],
-            'SecurityScheme' => ['type','description','name','in','scheme','bearerFormat','flows','openIdConnectUrl','x-'],
+            'Link'    => ['operationRef','operationId','parameters','requestBody','description','server','x-'],
+            'Callback'=> ['x-'], // карта callback-url → PathItem; ключи фильтровать спец-правилом
+
+            // ── Security
+            // 3.1: НЕТ 'deprecated' в SecurityScheme
+            'SecurityScheme'     => ['type','description','name','in','scheme','bearerFormat','flows','openIdConnectUrl','x-'],
+            // внутренняя обёртка твоей модели
+            'SecurityRequirement'=> ['requirements','x-'],
+
+            // ── OAuth
             'OAuthFlows' => ['implicit','password','clientCredentials','authorizationCode','x-'],
-            'OAuthFlow' => ['authorizationUrl','tokenUrl','refreshUrl','scopes','x-'],
+            'OAuthFlow'  => ['authorizationUrl','tokenUrl','refreshUrl','scopes','x-'],
+
+            // ── Tag
             'Tag' => ['name','description','externalDocs','x-'],
+
+            // ── По умолчанию: только расширения
             default => ['x-'],
         };
     }
