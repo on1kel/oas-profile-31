@@ -29,7 +29,7 @@ final class OAS31Profile implements SpecProfile
             extra: [
                 'pruneEmpty' => true,
                 'preserveEmpty.servers' => true,
-                'preserveEmpty.security' => true,
+//                'preserveEmpty.security' => true,
                 'preserveEmpty.tags' => true,
             ]
         );
