@@ -87,6 +87,7 @@ final class OAS31Profile implements SpecProfile
             'PathItem' => [
                 '$ref','summary','description','get','put','post','delete','options','head','patch','trace','servers','parameters','x-'
             ],
+            'Reference' => ['ref','summary','description','x-'],
             'Operation' => [
                 'tags','summary','description','externalDocs','operationId','parameters','requestBody','responses','callbacks','deprecated','security','servers','x-'
             ],
